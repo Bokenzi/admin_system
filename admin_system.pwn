@@ -131,6 +131,147 @@ CMD:alladmins(arg) {
 	return true;
 }
 
+CMD:jetpack(arg) {
+
+	if(PI[arg][Admin] >= 1) {
+
+		new Float: x, Float: y, Float: z;
+
+		GetPlayerPos(arg, x, y, z);
+
+		if(GetPlayerSpecialAction(arg) == SPECIAL_ACTION_NONE) {
+
+			SendClientMessage(arg, -1, "Uzeli ste jetpack");
+			SetPlayerSpecialAction(arg, SPECIAL_ACTION_USEJETPACK);
+
+		} else SetPlayerPos(arg, x, y, z+0.1), SendClientMessage(arg, -1, "Skinuli ste jetpack");
+
+	} else return SendClientMessage(arg, -1, "Niste admin");
+
+	return true;
+}
+
+CMD:agoto(arg, params[]) {
+
+	if(PI[arg][Admin] >= 1) {
+
+		new id;
+
+		if(sscanf(params, "u", id)) 
+			return SendClientMessage(arg, -1, "/goto [ID/Ime Igraca]");
+
+		if(!IsPlayerConnected(id)) 
+			return false;
+
+		new Float: x, Float: y, Float: z;
+
+		va_SendClientMessage(arg, -1, "Teleportovali ste se do igraca %s", GetName(id));
+		va_SendClientMessage(id, -1, "Admin %s se teleportovao do vas", GetName(arg));
+
+		GetPlayerPos(id, x, y, z);
+		SetPlayerPos(arg, x, y+2, z);
+
+	} else return SendClientMessage(arg, -1, "Niste admin");
+
+	return true;
+}
+
+CMD:aget(arg, params[]) {
+
+	if(PI[arg][Admin] >= 1) {
+
+		new id;
+
+		if(sscanf(params, "u", id)) 
+			return SendClientMessage(arg, -1, "/aget [ID/Ime Igraca]");
+
+		if(!IsPlayerConnected(id)) 
+			return false;
+
+		new Float: x, Float: y, Float: z;
+
+		va_SendClientMessage(arg, -1, "Teleportovali ste igraca %s do sebe", GetName(id));
+		va_SendClientMessage(id, -1, "Admin %s vas je teleportovao do sebe", GetName(arg));
+
+		GetPlayerPos(arg, x, y, z);
+		SetPlayerPos(id, x, y+2, z);
+
+	} else return SendClientMessage(arg, -1, "Niste admin");
+
+	return true;
+}
+
+CMD:kick(arg, params[]) {
+
+	if(PI[arg][Admin] >= 1) {
+
+		new id, reason[24];
+
+		if(sscanf(params, "us[24]", id, reason)) 
+			return SendClientMessage(arg, -1, "/kick [ID/Ime Igraca] [Razlog]");
+
+		if(!IsPlayerConnected(id)) 
+			return false;
+
+		if(strlen(reason) < 3 || strlen(reason) > 24)
+			return SendClientMessage(arg, -1, "Razlog ne moze biti kraci od 3 i duzi od 24 karaktera");
+
+		SetTimerEx("KickTimer", 50, false, "d", id);
+
+		va_SendClientMessageToAll(-1, "Igrac %s je izbacen sa servera od strane admina %s. Razlog: %s", GetName(id), GetName(arg), reason);
+
+	} else return SendClientMessage(arg, -1, "Niste admin");
+
+	return true;
+}
+
+CMD:slap(arg, params[]) {
+
+	if(PI[arg][Admin] >= 1) {
+
+		new id, reason[24], Float: x, Float: y, Float: z;
+
+		if(sscanf(params, "us[24]", id, reason))
+			return SendClientMessage(arg, -1, "/slap [ID/Ime Igraca] [Razlog]");
+
+		if(!IsPlayerConnected(id))
+			return false;
+
+		if(strlen(reason) < 3 || strlen(reason) > 24)
+			return SendClientMessage(arg, -1, "Razlog ne moze biti kraci od 3 i duzi od 24 karaktera");
+
+		va_SendClientMessage(arg, -1, "Osamarili ste igraca %s", GetName(id));
+		va_SendClientMessage(id, -1, "Osamareni ste od strane admina %s, razlog: %s", GetName(arg), reason);
+
+		GetPlayerPos(id, x, y, z);
+		SetPlayerPos(id, x, y, z+3.0);
+
+	} else return SendClientMessage(arg, -1, "Niste admin");
+
+	return true;
+}
+
+CMD:cc(arg) {
+
+	if(PI[arg][Admin] >= 1) {
+
+		new hour;
+
+		gettime(hour);
+
+		for(new i; i < MAX_PLAYERS; ++i) {
+			if(IsPlayerConnected(i)) {
+				ClearChat(i, 60);
+				va_SendClientMessage(i, -1, "Chat ociscen od strane admina %s", GetName(arg));
+				va_SendClientMessage(i, -1, "Trenutno je %d sati, uzivajte na serveru", hour);
+			}
+		}
+
+	} else return SendClientMessage(arg, -1, "Niste admin");
+
+	return true;
+}
+
 ////
 // - Callbacks
 ////
@@ -158,6 +299,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 ////
 // - Functions
 ////
+
+Function KickTimer(arg) 
+	return Kick(arg);
 
 Function SQL_ShowAdminDialog(arg) {
 
@@ -279,6 +423,14 @@ Function SQL_AdminRemoved(arg, id) {
 ////
 // - Plain functions
 ////
+
+ClearChat(arg, value) {
+
+	for(new i; i < value; ++i)
+		SendClientMessage(arg, -1, "");
+
+	return true;
+}
 
 GetName(arg) {
 
