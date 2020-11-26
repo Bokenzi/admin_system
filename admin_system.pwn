@@ -134,11 +134,7 @@ CMD:alladmins(arg) {
 
 CMD:komande(arg) {
 
-	if(PI[arg][Admin] >= 1) {
-
-		ShowPlayerDialog(arg, d_ahelp, DIALOG_STYLE_MSGBOX, "Lista komandi", "IGRAC: /admins /alladmins\nADMIN: /kick /slap /jetpack /agoto /aget /cc\nRCON: /setadmin /changeacode", "U redu", "");
-
-	} else return SendClientMessage(arg, -1, "Niste admin");
+	ShowPlayerDialog(arg, d_ahelp, DIALOG_STYLE_MSGBOX, "Lista komandi", "IGRAC: /admins /alladmins\nADMIN: /kick /slap /jetpack /agoto /aget /cc\nRCON: /setadmin /changeacode", "U redu", "");
 
 	return true;
 }
