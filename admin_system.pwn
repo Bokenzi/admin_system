@@ -105,7 +105,7 @@ CMD:admins(arg) {
 
 		if(IsPlayerConnected(i)) {
 
-			if(GetPlayerAdminLevel(i) >= 1) {
+			if(PI[arg][Admin] >= 1) {
 
 				format(str, sizeof str, "%d - %s\n", i+1, GetName(i));
 				strcat(list, str);
@@ -279,9 +279,6 @@ Function SQL_AdminRemoved(arg, id) {
 ////
 // - Plain functions
 ////
-
-GetPlayerAdminLevel(arg)
-	return PI[arg][Admin];
 
 GetName(arg) {
 
