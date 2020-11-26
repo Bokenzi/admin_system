@@ -22,6 +22,7 @@
 
 #define 	d_admins 2552
 #define 	d_acode  2553
+#define 	d_ahelp  2554
 
 ////
 // - Enum & variables
@@ -130,6 +131,18 @@ CMD:alladmins(arg) {
 
 	return true;
 }
+
+CMD:komande(arg) {
+
+	if(PI[arg][Admin] >= 1) {
+
+		ShowPlayerDialog(arg, d_ahelp, DIALOG_STYLE_MSGBOX, "Lista komandi", "IGRAC: /admins /alladmins\nADMIN: /kick /slap /jetpack /agoto /aget /cc\nRCON: /setadmin /changeacode", "U redu", "");
+
+	} else return SendClientMessage(arg, -1, "Niste admin");
+
+	return true;
+}
+
 
 CMD:jetpack(arg) {
 
